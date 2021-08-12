@@ -160,7 +160,7 @@ class QA extends Controller
         );
         // 驗證失敗
         if ($validator->fails()) {
-            return ['code'=>100,'error'=>'參數錯誤','data'=>$validator->errors()];
+            return ['code'=>200,'error'=>'參數錯誤','data'=>$validator->errors()];
         }
 
         try{
@@ -187,7 +187,7 @@ class QA extends Controller
             return ['code'=>101,'error'=>'新增成功','data'=>$qa_insert];
 
         }catch(Exception $e){
-            return ['code'=>100,'error'=>$e->getMessage(),'data'=>[]];
+            return ['code'=>100,'error'=>'新增失敗','data'=>$e->getMessage()];
         }
     }
 
@@ -259,7 +259,92 @@ class QA extends Controller
             return ['code'=>101,'error'=>'編輯成功','data'=>$update_qa];
 
         }catch(Exception $e){
-            return ['code'=>100,'error'=>$e->getMessage(),'data'=>[]];
+            return ['code'=>100,'error'=>'編輯失敗','data'=>$e->getMessage()];
+        }
+    }
+
+     /*
+    * 刪除問答(直接刪除資料)
+    * @param integer $q_id 問題id
+    * @return json ['code' => 200, 'error' =>'', 'data'=>[]]
+    */
+    public function Delete_Hard(Request $request)
+    {
+        //驗證
+        $validator = Validator::make(
+            [
+                'q_id'     => $request->q_id,
+            ],
+            [
+                'q_id'     => 'integer||required',
+            ],
+            [
+                'q_id.integer'      => '必須為數字',
+                'q_id.required'     => '必須填寫',
+            ]
+        );
+        // 驗證失敗
+        if ($validator->fails()) {
+            return ['code'=>201,'error'=>'參數錯誤','data'=>$validator->errors()];
+        }
+
+        try{
+            $hard_delete = DB::delete('delete from question where q_id = ?',[$request->q_id]);
+            // $hard_delete = DB::table('question')
+            // ->where('q_id',$request->q_id)
+            // ->delete();
+            if($hard_delete){
+                
+                return ['code'=>200,'error'=>'刪除成功','data'=>$hard_delete];
+            }
+            return ['code'=>101,'error'=>'刪除失敗','data'=>$hard_delete];
+
+        }catch(Exception $e){
+            return ['code'=>100,'error'=>'刪除失敗','data'=>$e->getMessage()];
+        }
+    }
+
+    /*
+    * 刪除問答(更改資料狀態)
+    * @param integer $q_id 問題id
+    * @return json ['code' => 200, 'error' =>'', 'data'=>[]]
+    */
+    public function Delete_Soft(Request $request)
+    {
+         //驗證
+         $validator = Validator::make(
+            [
+                'q_id'     => $request->q_id,
+            ],
+            [
+                'q_id'     => 'integer||required',
+            ],
+            [
+                'q_id.integer'      => '必須為數字',
+                'q_id.required'     => '必須填寫',
+            ]
+        );
+        // 驗證失敗
+        if ($validator->fails()) {
+            return ['code'=>200,'error'=>'參數錯誤','data'=>$validator->errors()];
+        }
+
+        try{
+            $soft_delete = DB::update('update question set state = 0 where q_id = ? and state = 1',[$request->q_id]);
+            // $soft_delete = DB::table('question')
+            // ->where('q_id',$request->q_id)
+            // ->where('state',1)
+            // ->update([
+            //     'state'=>0,
+            //     'uDate'=>Carbon::now('Asia/Taipei')
+            // ]);
+            if($soft_delete){
+                return ['code'=>101,'error'=>'刪除成功','data'=>$soft_delete];
+            }
+            return ['code'=>100,'error'=>'刪除失敗','data'=>$soft_delete];
+
+        }catch(Exception $e){
+            return ['code'=>101,'error'=>'刪除失敗','data'=>$e->getMessage()];
         }
     }
 }

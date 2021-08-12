@@ -26,3 +26,7 @@ Route::get('/Get_Type_List','QA@Get_Type_List');
 Route::post('/Insert_QA','QA@Insert_QA');
 // 編輯問答
 Route::patch('/Update_QA','QA@Update_QA');
+// 刪除問答(直接刪除資料)
+Route::delete('/Delete_Hard','QA@Delete_Hard');
+// 刪除問答(更改資料狀態)
+Route::patch('/Delete_Soft','QA@Delete_Soft');
