@@ -122,4 +122,144 @@ class QA extends Controller
             return ['code'=>100,'error'=>'查詢錯誤','data'=>$e->getMessage()];
         }
     }
+
+    /*
+    * 新增問答
+    * @param string $question 問題
+    * @param string $type 類型
+    * @param string $answer 答案
+    * @param string $auth 使用者名稱
+    * @return json ['code' => 200, 'error' =>'', 'data'=>[]]
+    */
+    public function Insert_QA(Request $request)
+    {
+        //驗證
+        $validator = Validator::make(
+            [
+                'question' => $request->question,
+                'type'     => $request->type,
+                'answer'   => $request->answer,
+                'auth'     => $request->auth,
+            ],
+            [
+                'question' => 'string||required',
+                'type'     => 'string||required',
+                'answer'   => 'string||required',
+                'auth'     => 'string||required',
+            ],
+            [
+                'question.string'   => '必須為字串',
+                'question.required' => '必須填寫',
+                'type.string'       => '必須為字串',
+                'type.required'     => '必須填寫',
+                'answer.string'     => '必須為字串',
+                'answer.required'   => '必須填寫',
+                'auth.string'       => '必須為字串',
+                'auth.required'     => '必須填寫',
+            ]
+        );
+        // 驗證失敗
+        if ($validator->fails()) {
+            return ['code'=>100,'error'=>'參數錯誤','data'=>$validator->errors()];
+        }
+
+        try{
+            $qa_insert = DB::insert('insert into question (question,type,answer,auth,state,cDate,uDate) values (?,?,?,?,?,?,?)',
+            [
+                $request->question,
+                $request->type,
+                $request->answer,
+                $request->auth,
+                1,
+                Carbon::now('Asia/Taipei'),
+                Carbon::now('Asia/Taipei')
+            ]);
+            // $qa_insert = DB::table('question')
+            // ->insert([
+            //     'question'=>$request->question,
+            //     'type'=>$request->type,
+            //     'answer'=>$request->answer,
+            //     'auth'=>$request->auth,
+            //     'state'=>1,
+            //     'cDate'=>Carbon::now('Asia/Taipei'),
+            //     'uDate'=>Carbon::now('Asia/Taipei'),
+            // ]);
+            return ['code'=>101,'error'=>'新增成功','data'=>$qa_insert];
+
+        }catch(Exception $e){
+            return ['code'=>100,'error'=>$e->getMessage(),'data'=>[]];
+        }
+    }
+
+    /*
+    * 編輯問答
+    * @param integer $q_id 問題id
+    * @param string $question 問題
+    * @param string $type 類型
+    * @param string $answer 答案
+    * @param string $auth 使用者名稱
+    * @return json ['code' => 200, 'error' =>'', 'data'=>[]]
+    */
+    public function Update_QA(Request $request)
+    {
+        //驗證
+        $validator = Validator::make(
+            [
+                'q_id'     => $request->q_id,
+                'question' => $request->question,
+                'type'     => $request->type,
+                'answer'   => $request->answer,
+                'auth'     => $request->auth,
+            ],
+            [
+                'q_id'     => 'integer||required',
+                'question' => 'string||required',
+                'type'     => 'string||required',
+                'answer'   => 'string||required',
+                'auth'     => 'string||required',
+            ],
+            [
+                'q_id.integer'      => '必須為數字',
+                'q_id.required'     => '必須填寫',
+                'question.string'   => '必須為字串',
+                'question.required' => '必須填寫',
+                'type.string'       => '必須為字串',
+                'type.required'     => '必須填寫',
+                'answer.string'     => '必須為字串',
+                'answer.required'   => '必須填寫',
+                'auth.string'       => '必須為字串',
+                'auth.required'     => '必須填寫',
+            ]
+        );
+        // 驗證失敗
+        if ($validator->fails()) {
+            return ['code'=>200,'error'=>'參數錯誤','data'=>$validator->errors()];
+        }
+
+        try{
+            $update_qa = DB::update('update question set question = ?,type = ?,answer = ?,auth = ?,uDate = ? where q_id = ? and state = 1',
+            [
+                $request->question,
+                $request->type,
+                $request->answer,
+                $request->auth,
+                Carbon::now('Asia/Taipei'),
+                $request->q_id
+            ]);
+            // $update_qa = DB::table('question')
+            // ->where('q_id',$request->q_id)
+            // ->where('state',1)
+            // ->update([
+            //     'question'=>$request->question,
+            //     'type'=>$request->type,
+            //     'answer'=>$request->answer,
+            //     'auth'=>$request->auth,
+            //     'uDate'=>Carbon::now('Asia/Taipei'),
+            // ]);
+            return ['code'=>101,'error'=>'編輯成功','data'=>$update_qa];
+
+        }catch(Exception $e){
+            return ['code'=>100,'error'=>$e->getMessage(),'data'=>[]];
+        }
+    }
 }

@@ -22,3 +22,7 @@ Route::get('/Get_Question_List/{key_word?}','QA@Get_Question_List');
 Route::get('/Get_Answer/{q_id?}','QA@Get_Answer');
 // 取得類型清單
 Route::get('/Get_Type_List','QA@Get_Type_List');
+// 新增問答
+Route::post('/Insert_QA','QA@Insert_QA');
+// 編輯問答
+Route::patch('/Update_QA','QA@Update_QA');
