@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['middleware' => ['api', 'cors']], function () {
 // 取得問題清單
 Route::get('/Get_Question_List/{key_word?}','QA@Get_Question_List');
 // 取得答案
@@ -30,3 +32,4 @@ Route::patch('/Update_QA','QA@Update_QA');
 Route::delete('/Delete_Hard','QA@Delete_Hard');
 // 刪除問答(更改資料狀態)
 Route::patch('/Delete_Soft','QA@Delete_Soft');
+});
